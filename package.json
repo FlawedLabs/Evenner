@@ -7,6 +7,7 @@
   "scripts": {
     "dev:client": "cd ./packages/client && npm run dev",
     "dev:server": "cd ./packages/server && npm run dev",
+    "db:push": "cd ./packages/server && npx prisma db push",
     "lint": "npx prettier --write ."
   },
   "devDependencies": {
