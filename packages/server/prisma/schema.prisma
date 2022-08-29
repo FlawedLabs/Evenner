@@ -31,8 +31,8 @@ model Event {
   endTime      String?
   startDate    DateTime
   endDate      DateTime
-  location     String
-  position     Json
+  location     String?
+  position     Json?
   isInPerson   Boolean
 
   createdAt DateTime @default(now())

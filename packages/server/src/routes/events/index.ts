@@ -5,29 +5,28 @@ import { Prisma } from '@prisma/client'
 export default async function (fastify: FastifyInstance, opts: any) {
     fastify.post('/', async (request: EventRequest, reply) => {
         try {
-            const { title, content, isInPerson, coverPicture, startDate, endDate, startTime, endTime, location, position, authorId } = request.body;
-            return await fastify.prisma.event.create({
+            const { title, content, published, isInPerson, coverPicture, startDate, endDate, startTime, endTime, location, position, authorId } = request.body;
+            const event = await fastify.prisma.event.create({
                 data: {
                     title,
                     content,
-                    isInPerson,
+                    published,
                     coverPicture,
-                    startDate: new Date(),
-                    endDate: new Date(),
                     startTime,
                     endTime,
+                    startDate: new Date(startDate),
+                    endDate: new Date(endDate),
                     location,
                     position: JSON.stringify(position),
-                    authorId: '1'
+                    isInPerson,
+                    authorId,
                 },
             })
-        } catch (e) {
-            console.error('events', e)
 
-            reply
-                .code(500)
-                .header('Content-Type', 'application/json; charset=utf-8')
-                .send({ error: `Error during event creation` })
+            reply.code(201).send(event);
+
+        } catch (e) {
+            reply.code(500).send({ error: `Error during event creation` })
         }
         
     });
@@ -40,8 +39,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 }
             })
         } catch (e) {
-            console.error('events', e)
-
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
                 if (e.code === 'P2025') {
                     reply.code(404).send({ error: 'Event not found'})
@@ -57,75 +54,59 @@ export default async function (fastify: FastifyInstance, opts: any) {
         try {
             return await fastify.prisma.event.findMany()
         } catch (e) {
-            console.error('events', e)
-            reply
-                .code(500)
-                .header('Content-Type', 'application/json; charset=utf-8')
-                .send({ error: `Error during event fecthing` })
+            reply.code(500).send({ error: `Error during event fecthing` })
         }
     })
 
     fastify.patch('/:id', async (request: EventRequest, reply) => {
         try {
             const { title, content, isInPerson, coverPicture, startDate, endDate, startTime, endTime, location, position, authorId } = request.body;
-            return await fastify.prisma.event.update({
+            await fastify.prisma.event.update({
                 where: {
                     id: request.params.id,
                 },
                 data: {
-                    title,
-                    content,
-                    isInPerson,
-                    coverPicture,
-                    startDate: new Date(),
-                    endDate: new Date(),
-                    startTime,
-                    endTime,
-                    location,
-                    position: JSON.stringify(position),
-                    authorId: '1'
+                    title: title || undefined,
+                    content: content || undefined,
+                    isInPerson: isInPerson || undefined,
+                    coverPicture: coverPicture || undefined,
+                    startDate: startDate ? new Date(startDate) : undefined,
+                    endDate: endDate ? new Date(endDate) : undefined,
+                    startTime: startTime || undefined,
+                    endTime: endTime || undefined,
+                    location: location || undefined,
+                    position: position ? JSON.stringify(position) : undefined,
+                    authorId: authorId || undefined
                 },
             })
-        } catch (e: any) {
-            console.error('events', e)
 
+            reply.code(204).send();
+        } catch (e: any) {
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
                 if (e.code === 'P2025') {
-                    reply
-                        .code(404)
-                        .header('Content-Type', 'application/json; charset=utf-8')
-                        .send({ error: 'Event not found'})
+                    reply.code(404).send({ error: 'Event not found'})
                 }
             }
-
-            reply
-                .code(500)
-                .header('Content-Type', 'application/json; charset=utf-8')
-                .send({ error: `Error during event update` })
+            reply.code(500).send({ error: `Error during event update` })
         }
     })
 
     fastify.delete('/:id', async (request: EventRequest, reply) => {
         try {
-            return await fastify.prisma.event.delete({
+            await fastify.prisma.event.delete({
                 where: {
                     id: request.params.id,
                 },
             })
+
+            reply.code(204).send();
         } catch (e) {
-            console.error('events', e);
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
                 if (e.code === 'P2025') {
-                    reply
-                        .code(404)
-                        .header('Content-Type', 'application/json; charset=utf-8')
-                        .send({ error: 'Event not found'});
+                    reply.code(404).send({ error: 'Event not found'});
                 }
             }
-            reply
-                .code(500)
-                .header('Content-Type', 'application/json; charset=utf-8')
-                .send({ error: `Error during event deletion` });
+            reply.code(500).send({ error: `Error during event deletion` });
         }
     })
 }
