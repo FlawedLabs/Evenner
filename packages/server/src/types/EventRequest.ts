@@ -10,7 +10,7 @@ export type EventRequest = FastifyRequest<{
         endTime?: string;
         startDate: Date;
         endDate: Date;
-        location: string;
+        location?: string;
         position?: Object;
         isInPerson: boolean;
         authorId: string;
