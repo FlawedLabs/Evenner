@@ -16,7 +16,7 @@ fastify.register(autoLoad, {
 
 fastify.register(autoLoad, {
     dir: path.join(__dirname, 'routes'),
-    options: { prefix: '/api' }
+    options: { prefix: '/api' },
 });
 
 fastify.listen({ port: 4000 }, (err) => {

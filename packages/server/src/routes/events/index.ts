@@ -1,53 +1,85 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { EventRequest } from '../../types/EventRequest';
 import { prisma, Prisma } from '@prisma/client';
-import { eventSchema } from 'common';
+import { EventSchema } from 'common/src/schemas/EventSchema';
+import errorHandler from '../../util/errorHandler';
 
 export default async function (fastify: FastifyInstance, opts: any) {
-    fastify.post('/', async (request: EventRequest, reply) => {
-        try {
-            const {
-                title,
-                content,
-                published,
-                isInPerson,
-                coverPicture,
-                startDate,
-                endDate,
-                startTime,
-                endTime,
-                location,
-                position,
-                isPrivate,
-                authorId,
-            } = request.body;
-            const eventData = {
-                data: {
+    fastify.setErrorHandler(errorHandler);
+
+    fastify.post(
+        '/',
+        {
+            schema: {
+                body: EventSchema,
+            },
+            // @ts-ignore
+            validatorCompiler: ({ schema, method, url, httpPart }) => {
+                return function (data) {
+                    try {
+                        // @ts-ignore
+                        const result = schema.validateSync(data, {
+                            strict: false,
+                            abortEarly: false,
+                            stripUnknown: true,
+                            recursive: true,
+                        });
+                        return { value: result };
+                    } catch (err: any) {
+                        const errors: Array<{ name: string; message: string }> =
+                            [];
+                        err.inner.forEach((e: { path: any; message: any }) => {
+                            errors.push({ name: e.path, message: e.message });
+                        });
+
+                        return { error: errors };
+                    }
+                };
+            },
+        },
+        async (request: EventRequest, reply) => {
+            try {
+                const {
                     title,
                     content,
                     published,
+                    isInPerson,
                     coverPicture,
+                    startDate,
+                    endDate,
                     startTime,
                     endTime,
-                    startDate: new Date(startDate),
-                    endDate: new Date(endDate),
                     location,
-                    position: JSON.stringify(position),
-                    isInPerson,
+                    position,
                     isPrivate,
                     authorId,
-                },
-            };
+                } = request.body;
+                const eventData = {
+                    data: {
+                        title,
+                        content,
+                        published,
+                        coverPicture,
+                        startTime,
+                        endTime,
+                        startDate: new Date(startDate),
+                        endDate: new Date(endDate),
+                        location,
+                        position: JSON.stringify(position),
+                        isInPerson,
+                        isPrivate,
+                        authorId,
+                    },
+                };
 
-            //await eventSchema.validate(eventData);
+                const event = await fastify.prisma.event.create(eventData);
 
-            const event = await fastify.prisma.event.create(eventData);
-
-            reply.code(201).send(event);
-        } catch (e) {
-            reply.code(500).send(e);
+                reply.code(201).send(event);
+            } catch (e) {
+                reply.code(500).send(e);
+            }
         }
-    });
+    );
 
     fastify.get('/:id', async (request: EventRequest, reply) => {
         try {
