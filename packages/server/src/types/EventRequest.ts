@@ -1,4 +1,4 @@
-import {FastifyRequest} from "fastify";
+import { FastifyRequest } from 'fastify';
 
 export type EventRequest = FastifyRequest<{
     Body: {
@@ -14,9 +14,14 @@ export type EventRequest = FastifyRequest<{
         position?: Object;
         isInPerson: boolean;
         authorId: string;
-    }
+        isPrivate?: boolean;
+    };
 
     Params: {
-        id: string
-    }
-}>
+        id: string;
+    };
+
+    Query: {
+        title: string;
+    };
+}>;
