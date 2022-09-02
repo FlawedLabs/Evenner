@@ -1,9 +1,14 @@
 import Fastify from 'fastify';
+import errorHandler from './util/errorHandler';
+import autoLoad from '@fastify/autoload';
+import yupValidatorCompiler from './util/yupValidatorCompiler';
 
 import path from 'path';
-import autoLoad from '@fastify/autoload';
 
 const fastify = Fastify({ logger: true });
+
+fastify.setErrorHandler(errorHandler);
+fastify.setValidatorCompiler(yupValidatorCompiler);
 
 fastify.register(require('@fastify/cors'), {
     origin: '*',

@@ -1,9 +1,14 @@
-import { Prisma } from "@prisma/client";
+import { prisma, Prisma } from "@prisma/client";
 import { FastifyInstance, FastifyRequest } from "fastify";
 import { UserSchema } from 'common/src/schemas/UserSchema';
 import bcrypt from "bcrypt";
-import errorHandler from '../../util/errorHandler';
 import "@sentry/tracing"
+
+type idInRequest = FastifyRequest<{
+    Params: {
+        id: string;
+    }
+}>
 
 type createUserRequest = FastifyRequest<{
     Body: {
@@ -15,44 +20,38 @@ type createUserRequest = FastifyRequest<{
 }>
 
 export default async function (fastify: FastifyInstance, opts: any) {
-    fastify.setErrorHandler(errorHandler);
+    fastify.get('/:id', async (request: idInRequest, reply) => {
+        const { id } = request.params;
 
+        try {
+            return await fastify.prisma.user.findFirstOrThrow({
+                where: {
+                    id
+                }
+            });
+
+        } catch (e: any) {
+            reply.code(404).send({
+                statusCode: 404,
+                error: "Ressource not found on the server",
+                message: "User not found"
+            })
+        }
+    })
+
+    // Return 10 users
     fastify.get('/', async (request, reply) => {
-        return await fastify.prisma.user.findMany();
+        return await fastify.prisma.user.findMany({
+            take: 10,
+        });
     });
 
+    // Create a user, validate it with the UserSchema and register his 
     fastify.post('/', {
         schema: {
             body: UserSchema
-        },
-        // @ts-ignore
-        validatorCompiler: ({ schema, method, url, httpPart }) => {
-            return function (data) {
-                try {
-                    // @ts-ignore
-                    const result = schema.validateSync(data, {
-                        strict: false,
-                        abortEarly: false,
-                        stripUnknown: true,
-                        recursive: true
-                    })
-                    return { value: result }
-                } catch (err: any) {
-                    const errors: Array<{ name: string, message: string }> = [];
-                    err.inner.forEach((e: { path: any; message: any; }) => {
-                        errors.push({ name: e.path, message: e.message })
-                    })
-
-                    return { error: errors }
-                }
-            }
         }
     }, async (request: createUserRequest, reply) => {
-        const transaction = await fastify.sentry.startTransaction({
-            op: "usercreation",
-            name: "User Creation Benchmark"
-        })
-
         const { name, email, password, role } = request.body;
 
         const encryptedPassword = await bcrypt.hash(password, 10);
@@ -78,8 +77,29 @@ export default async function (fastify: FastifyInstance, opts: any) {
 
             // fastify.sentry.captureException(e)
             throw e;
-        } finally {
-            transaction.finish();
         }
+    });
+
+    fastify.delete('/:id', async (request: idInRequest, reply) => {
+        const { id } = request.params;
+
+        try {
+            return await fastify.prisma.user.delete({
+                where: {
+                    id
+                }
+            })
+        } catch (e: any) {
+            if (e.code === 'P2025') {
+                reply.code(404).send({
+                    statusCode: 404,
+                    error: 'Ressource not found on the server',
+                    message: 'User not found'
+                })
+            }
+
+            throw e;
+        }
+
     })
 }
