@@ -1,13 +1,19 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 
-const data = Array.from({ length: 15 }).map(() => ({
+const eventData = Array.from({ length: 15 }).map(() => ({
     title: faker.hacker.phrase(),
     content: faker.lorem.paragraph(),
     published: faker.datatype.boolean(),
     coverPicture: faker.image.imageUrl(),
-    startTime: faker.date.future().getTime().toString(),
-    endTime: faker.date.future().getTime().toString(),
+    startTime:
+        String(faker.date.future().getUTCHours()).padStart(2, '0') +
+        ':' +
+        String(faker.date.future().getUTCMinutes()).padStart(2, '0'),
+    endTime:
+        String(faker.date.future().getUTCHours()).padStart(2, '0') +
+        ':' +
+        String(faker.date.future().getUTCMinutes()).padStart(2, '0'),
     startDate: faker.date.future(),
     endDate: faker.date.future(),
     location: faker.address.city(),
@@ -20,11 +26,25 @@ const data = Array.from({ length: 15 }).map(() => ({
     isPrivate: faker.datatype.boolean(),
 }));
 
+/*const arr = ['ADMIN', 'USER'];
+const index = Math.floor(Math.random() * arr.length);
+const role = arr[index];*/
+
+const userData = Array.from({ length: 5 }).map(() => ({
+    name: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+}));
+
 const prisma = new PrismaClient();
 
 async function main() {
     await prisma.event.createMany({
-        data,
+        data: eventData,
+    });
+
+    await prisma.user.createMany({
+        data: userData,
     });
 }
 

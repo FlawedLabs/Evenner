@@ -83,11 +83,21 @@ export default async function (fastify: FastifyInstance, opts: any) {
 
     fastify.get('/:id', async (request: EventRequest, reply) => {
         try {
-            return await fastify.prisma.event.findUnique({
+            const event = await fastify.prisma.event.findUnique({
                 where: {
                     id: request.params.id,
                 },
             });
+
+            if (!event) {
+                throw new Prisma.PrismaClientKnownRequestError(
+                    'Event not found',
+                    'P2025',
+                    Prisma.prismaVersion.client
+                );
+            }
+
+            return event;
         } catch (e) {
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
                 if (e.code === 'P2025') {
@@ -111,17 +121,22 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 _count: true,
             });
 
-            if (request.query.page > whereData._count / 5) {
+            const totalEvent = whereData._count;
+            const take = 5;
+            const totalPage = Math.ceil(totalEvent / take);
+            const currentPage = request.query.page;
+
+            if (currentPage > totalPage || currentPage < 1) {
                 throw new Error();
             }
 
             let skip = 0;
-            if (request.query.page > 1) {
-                skip = 5 * request.query.page;
+            if (currentPage > 1) {
+                skip = take * (currentPage - 1);
             }
 
             return await fastify.prisma.event.findMany({
-                take: 5,
+                take,
                 skip,
                 where: {
                     isPrivate: false,
