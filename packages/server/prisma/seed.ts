@@ -22,29 +22,35 @@ const eventData = Array.from({ length: 15 }).map(() => ({
         long: faker.address.longitude(),
     },
     isInPerson: faker.datatype.boolean(),
-    authorId: '3a8c6a94-380e-4b05-97f4-252377afa6f7',
     isPrivate: faker.datatype.boolean(),
 }));
 
-/*const arr = ['ADMIN', 'USER'];
+const arr = ['ADMIN', 'USER'];
 const index = Math.floor(Math.random() * arr.length);
-const role = arr[index];*/
+const role: any = arr[index];
 
 const userData = Array.from({ length: 5 }).map(() => ({
-    name: faker.name.lastName(),
+    name: faker.name.firstName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
+    role,
 }));
 
 const prisma = new PrismaClient();
 
 async function main() {
-    await prisma.event.createMany({
-        data: eventData,
-    });
-
     await prisma.user.createMany({
         data: userData,
+    });
+    await prisma.user.create({
+        data: {
+            name: faker.name.firstName(),
+            email: faker.internet.email(),
+            password: faker.internet.password(),
+            events: {
+                create: eventData,
+            },
+        },
     });
 }
 

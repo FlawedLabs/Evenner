@@ -54,7 +54,8 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     isPrivate,
                     authorId,
                 } = request.body;
-                const eventData = {
+
+                const event = await fastify.prisma.event.create({
                     data: {
                         title,
                         content,
@@ -70,9 +71,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
                         isPrivate,
                         authorId,
                     },
-                };
-
-                const event = await fastify.prisma.event.create(eventData);
+                });
 
                 reply.code(201).send(event);
             } catch (e) {
