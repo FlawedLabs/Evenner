@@ -1,25 +1,28 @@
-import { FastifyReply, FastifyRequest } from "fastify"
+import { FastifyReply, FastifyRequest } from 'fastify';
 
-const errorHandler = (error: any, request: FastifyRequest, reply: FastifyReply) => {
-
+const errorHandler = (
+    error: any,
+    request: FastifyRequest,
+    reply: FastifyReply
+) => {
     const statusCode = error.statusCode;
 
     let response;
 
-    const { validation, validationContext } = error
+    const { validation, validationContext } = error;
 
     if (validation) {
         response = {
             message: `A validation error occurred when validating the ${validationContext}...`,
-            errors: validation
-        }
+            errors: validation,
+        };
     } else {
         response = {
-            message: 'An error occurred...'
-        }
+            message: 'An error occurred...',
+        };
     }
 
-    reply.status(statusCode).send(response)
-}
+    reply.status(statusCode).send(response);
+};
 
-export default errorHandler
+export default errorHandler;

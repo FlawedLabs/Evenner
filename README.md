@@ -23,8 +23,8 @@ You can then download all the dependencies
 
 ## Authors
 
-- [@Kayoshi-dev](https://www.github.com/kayoshi-dev)
-- [@Mathiiii](https://www.github.com/mathiiii-dev)
+-   [@Kayoshi-dev](https://www.github.com/kayoshi-dev)
+-   [@Mathiiii](https://www.github.com/mathiiii-dev)
 
 ## Contributing
 

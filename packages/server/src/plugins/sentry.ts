@@ -16,13 +16,14 @@ const sentryPlugin: FastifyPluginAsync = fp(async (fastify, options) => {
     });
 
     fastify.addHook('onError', (request, reply, error, done) => {
-        if (process.env.NODE_ENV !== "development") {
+        // Probably should check the status code on error before capturing all errors, maybe capture only error.statusCode >= 400?
+        if (process.env.NODE_ENV !== 'development') {
             Sentry.captureException(error);
         }
         done();
     });
 
     fastify.decorate('sentry', Sentry);
-})
+});
 
 export default sentryPlugin;
