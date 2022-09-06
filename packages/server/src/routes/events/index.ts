@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { EventRequest } from '../../types/EventRequest';
-import { prisma, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { EventSchema } from 'common/src/schemas/EventSchema';
 import errorHandler from '../../util/errorHandler';
 
@@ -86,6 +86,13 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 where: {
                     id: request.params.id,
                 },
+                include: {
+                    attendees: {
+                        select: {
+                            user: true,
+                        },
+                    },
+                },
             });
 
             if (!event) {
@@ -104,7 +111,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 }
             }
 
-            reply.code(500).send({ error: `Error during event fecthing` });
+            reply.code(500).send({ error: `Error during event fetching` });
         }
     });
 
@@ -145,7 +152,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 },
             });
         } catch (e) {
-            reply.code(500).send({ error: `Error during event fecthing` });
+            reply.code(500).send({ error: `Error during event fetching` });
         }
     });
 
@@ -212,6 +219,28 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 }
             }
             reply.code(500).send({ error: `Error during event deletion` });
+        }
+    });
+
+    fastify.post('/:id/register', async (request: any, reply) => {
+        try {
+            const usersOnEvent = await fastify.prisma.usersOnEvents.create({
+                data: {
+                    userId: request.body.userId,
+                    eventId: request.params.id,
+                },
+            });
+
+            reply.code(201).send(usersOnEvent);
+        } catch (e) {
+            if (e instanceof Prisma.PrismaClientKnownRequestError) {
+                if (e.code === 'P2025') {
+                    reply.code(404).send({ error: 'Event not found' });
+                }
+            }
+            reply
+                .code(500)
+                .send({ error: 'Error during usersOnEvent creation' });
         }
     });
 }
