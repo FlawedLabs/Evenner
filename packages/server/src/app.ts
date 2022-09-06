@@ -1,9 +1,14 @@
 import Fastify from 'fastify';
+import errorHandler from './util/errorHandler';
+import autoLoad from '@fastify/autoload';
+import yupValidatorCompiler from './util/yupValidatorCompiler';
 
 import path from 'path';
-import autoLoad from '@fastify/autoload';
 
 const fastify = Fastify({ logger: true });
+
+fastify.setErrorHandler(errorHandler);
+fastify.setValidatorCompiler(yupValidatorCompiler);
 
 fastify.register(require('@fastify/cors'), {
     origin: '*',
@@ -16,7 +21,7 @@ fastify.register(autoLoad, {
 
 fastify.register(autoLoad, {
     dir: path.join(__dirname, 'routes'),
-    options: { prefix: '/api' }
+    options: { prefix: '/api' },
 });
 
 fastify.listen({ port: 4000 }, (err) => {
