@@ -19,7 +19,6 @@
         "cross-env": "^7.0.3",
         "fastify": "^4.5.3",
         "fastify-plugin": "^4.2.1",
-        "joi": "^17.6.0",
         "nodemon": "^2.0.19",
         "pino-pretty": "^9.1.0",
         "prisma": "^4.2.1",
@@ -33,5 +32,8 @@
         "@sentry/tracing": "^7.12.0",
         "bcrypt": "^5.0.1",
         "common": "*"
+    },
+    "prisma": {
+        "seed": "ts-node ./prisma/seed.ts"
     }
 }
