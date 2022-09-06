@@ -22,3 +22,22 @@ export const EventSchema = yup
         isPrivate: yup.boolean(),
     })
     .required();
+
+export const EventSchemaPatch = yup.object().shape({
+    title: yup
+        .string()
+        .min(3, 'The minimum length of title is 3 chars.')
+        .max(255, 'The maximum length of title is 255 chars.'),
+    content: yup.string(),
+    published: yup.boolean(),
+    coverPicture: yup.string(),
+    startTime: yup.string(),
+    endTime: yup.string(),
+    startDate: yup.date(),
+    endDate: yup.date(),
+    location: yup.string(),
+    position: yup.object(),
+    isInPerson: yup.boolean(),
+    authorId: yup.string(),
+    isPrivate: yup.boolean(),
+});
