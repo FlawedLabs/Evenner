@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import { FastifyInstance } from 'fastify';
 import { EventRequest } from '../../types/EventRequest';
 import { Prisma } from '@prisma/client';
 import { EventSchema, EventSchemaPatch } from 'common/src/schemas/EventSchema';
@@ -77,7 +77,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
             } catch (e) {
                 reply.code(500).send({
                     error: {
-                        code: 500,
                         error: 'Internal Server Error',
                         message: 'Something went wrong.',
                     },
@@ -115,7 +114,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 if (e.code === 'P2025') {
                     reply.code(404).send({
                         error: {
-                            code: 404,
                             error: 'Error Not Found',
                             message: 'The event was not found.',
                         },
@@ -125,7 +123,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
 
             reply.code(500).send({
                 error: {
-                    code: 500,
                     error: 'Internal Server Error',
                     message: 'Something went wrong.',
                 },
@@ -172,7 +169,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
         } catch (e) {
             reply.code(500).send({
                 error: {
-                    code: 500,
                     error: 'Internal Server Error',
                     message: 'Something went wrong.',
                 },
@@ -228,7 +224,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     if (e.code === 'P2025') {
                         reply.code(404).send({
                             error: {
-                                code: 404,
                                 error: 'Error Not Found',
                                 message: 'The event was not found',
                             },
@@ -237,7 +232,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 }
                 reply.code(500).send({
                     error: {
-                        code: 500,
                         error: 'Internal Server Error',
                         message: 'Something went wrong.',
                     },
@@ -260,7 +254,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 if (e.code === 'P2025') {
                     reply.code(404).send({
                         error: {
-                            code: 404,
                             error: 'Error Not Found',
                             message: 'The event was not found',
                         },
@@ -269,7 +262,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
             }
             reply.code(500).send({
                 error: {
-                    code: 500,
                     error: 'Internal Server Error',
                     message: 'Something went wrong.',
                 },
@@ -288,11 +280,11 @@ export default async function (fastify: FastifyInstance, opts: any) {
 
             reply.code(201).send(usersOnEvent);
         } catch (e) {
+            console.log(e);
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
                 if (e.code === 'P2025') {
                     reply.code(404).send({
                         error: {
-                            code: 404,
                             error: 'Error Not Found',
                             message: 'The event was not found',
                         },
@@ -301,7 +293,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
             }
             reply.code(500).send({
                 error: {
-                    code: 500,
                     error: 'Internal Server Error',
                     message: 'Something went wrong.',
                 },
