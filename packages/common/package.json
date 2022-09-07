@@ -12,6 +12,7 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@swc/core": "^1.2.248",
         "nodemon": "^2.0.19",
         "pino-pretty": "^9.1.0",
         "ts-node": "^10.9.1",
