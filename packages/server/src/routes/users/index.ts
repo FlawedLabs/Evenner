@@ -6,6 +6,7 @@ import {
     createUserRequest,
     updateUserRequest,
 } from '../../types/UserRequestsTypes';
+import { BCRYPT_SALT } from '../../util/const';
 import bcrypt from 'bcrypt';
 import '@sentry/tracing';
 
@@ -48,7 +49,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
         async (request: createUserRequest, reply) => {
             const { name, email, password, role } = request.body;
 
-            const encryptedPassword = await bcrypt.hash(password, 10);
+            const encryptedPassword = await bcrypt.hash(password, BCRYPT_SALT);
 
             try {
                 const user = await fastify.prisma.user.create({
