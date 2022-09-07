@@ -15,6 +15,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
             },
         },
         async (request: EventRequest, reply) => {
+            // @Optim maybe try to spread the request.body object?
             try {
                 const {
                     title,
@@ -53,10 +54,8 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 reply.code(201).send(event);
             } catch (e) {
                 reply.code(500).send({
-                    error: {
-                        error: 'Internal Server Error',
-                        message: 'Something went wrong.',
-                    },
+                    error: 'Internal server error',
+                    message: 'Something went wrong.',
                 });
             }
         }
@@ -64,7 +63,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
 
     fastify.get('/:id', async (request: EventRequest, reply) => {
         try {
-            const event = await fastify.prisma.event.findUnique({
+            return await fastify.prisma.event.findUniqueOrThrow({
                 where: {
                     id: request.params.id,
                 },
@@ -76,33 +75,19 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     },
                 },
             });
-
-            if (!event) {
-                throw new Prisma.PrismaClientKnownRequestError(
-                    'Event not found',
-                    'P2025',
-                    Prisma.prismaVersion.client
-                );
-            }
-
-            return event;
         } catch (e) {
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
                 if (e.code === 'P2025') {
                     reply.code(404).send({
-                        error: {
-                            error: 'Error Not Found',
-                            message: 'The event was not found.',
-                        },
+                        error: 'Ressource not found on the server',
+                        message: 'The event was not found.',
                     });
                 }
             }
 
             reply.code(500).send({
-                error: {
-                    error: 'Internal Server Error',
-                    message: 'Something went wrong.',
-                },
+                error: 'Internal server error',
+                message: 'Something went wrong.',
             });
         }
     });
@@ -145,10 +130,8 @@ export default async function (fastify: FastifyInstance, opts: any) {
             });
         } catch (e) {
             reply.code(500).send({
-                error: {
-                    error: 'Internal Server Error',
-                    message: 'Something went wrong.',
-                },
+                error: 'Internal server error',
+                message: 'Something went wrong.',
             });
         }
     });
@@ -176,18 +159,14 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 if (e instanceof Prisma.PrismaClientKnownRequestError) {
                     if (e.code === 'P2025') {
                         reply.code(404).send({
-                            error: {
-                                error: 'Error Not Found',
-                                message: 'The event was not found',
-                            },
+                            error: 'Ressource not found on the server',
+                            message: 'The event was not found',
                         });
                     }
                 }
                 reply.code(500).send({
-                    error: {
-                        error: 'Internal Server Error',
-                        message: 'Something went wrong.',
-                    },
+                    error: 'Internal server error',
+                    message: 'Something went wrong.',
                 });
             }
         }
@@ -206,18 +185,14 @@ export default async function (fastify: FastifyInstance, opts: any) {
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
                 if (e.code === 'P2025') {
                     reply.code(404).send({
-                        error: {
-                            error: 'Error Not Found',
-                            message: 'The event was not found',
-                        },
+                        error: 'Ressource not found on the server',
+                        message: 'The event was not found',
                     });
                 }
             }
             reply.code(500).send({
-                error: {
-                    error: 'Internal Server Error',
-                    message: 'Something went wrong.',
-                },
+                error: 'Internal server error',
+                message: 'Something went wrong.',
             });
         }
     });
@@ -237,18 +212,14 @@ export default async function (fastify: FastifyInstance, opts: any) {
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
                 if (e.code === 'P2025') {
                     reply.code(404).send({
-                        error: {
-                            error: 'Error Not Found',
-                            message: 'The event was not found',
-                        },
+                        error: 'Ressource not found on the server',
+                        message: 'The event was not found',
                     });
                 }
             }
             reply.code(500).send({
-                error: {
-                    error: 'Internal Server Error',
-                    message: 'Something went wrong.',
-                },
+                error: 'Internal server error',
+                message: 'Something went wrong.',
             });
         }
     });

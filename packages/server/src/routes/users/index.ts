@@ -71,7 +71,10 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     }
                 }
 
-                throw e;
+                reply.code(500).send({
+                    error: 'Internal Server Error',
+                    message: 'Something went wrong.',
+                });
             }
         }
     );
@@ -111,14 +114,17 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     }
 
                     if (e.code === 'P2002') {
-                        reply.code(500).send({
+                        reply.code(409).send({
                             error: 'Email already used',
                             message: 'An account with this email already exist',
                         });
                     }
                 }
 
-                throw e;
+                reply.code(500).send({
+                    error: 'Internal Server Error',
+                    message: 'Something went wrong.',
+                });
             }
         }
     );
@@ -140,7 +146,10 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 });
             }
 
-            throw e;
+            reply.code(500).send({
+                error: 'Internal Server Error',
+                message: 'Something went wrong.',
+            });
         }
     });
 }
