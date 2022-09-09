@@ -11,6 +11,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 body: AuthSchema,
             },
         },
+
         async (request: SigninRequest, reply) => {
             const { email, password } = request.body;
 
@@ -40,12 +41,19 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     });
                 }
 
-                return fastify.jwt.sign({
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
-                    role: user.role,
-                });
+                const token = fastify.jwt.sign(
+                    {
+                        user: {
+                            id: user.id,
+                            email: user.email,
+                            name: user.name,
+                            role: user.role,
+                        },
+                    },
+                    { expiresIn: 1200 }
+                );
+
+                return { token };
             } catch (e: any) {
                 reply.code(404).send({
                     error: 'Ressource not found on the server',
