@@ -28,15 +28,19 @@ export default async function (fastify: FastifyInstance, opts: any) {
         }
     });
 
-    // Return 10 users
-    fastify.get('/', async (request, reply) => {
-        return await fastify.prisma.user.findMany({
-            take: 10,
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
-    });
+    // FindMany, return 10 users
+    fastify.get(
+        '/',
+        { preHandler: fastify.auth([fastify.checkAdmin]) },
+        async (request, reply) => {
+            return await fastify.prisma.user.findMany({
+                take: 10,
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            });
+        }
+    );
 
     // Create a user, validate it with the UserSchema and register his
     fastify.post(
@@ -91,10 +95,13 @@ export default async function (fastify: FastifyInstance, opts: any) {
             const { id } = request.params;
 
             // If password is specified, then encrypt it and save it in the body
-            request.body.password = await bcrypt.hash(
-                request.body.password,
-                10
-            );
+
+            if (request.body?.password) {
+                request.body.password = await bcrypt.hash(
+                    request.body.password,
+                    10
+                );
+            }
 
             try {
                 return await fastify.prisma.user.update({

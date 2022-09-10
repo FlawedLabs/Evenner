@@ -50,7 +50,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
                             role: user.role,
                         },
                     },
-                    { expiresIn: 1200 }
+                    { expiresIn: 1200, iss: 'Evenner' }
                 );
 
                 return { token };
