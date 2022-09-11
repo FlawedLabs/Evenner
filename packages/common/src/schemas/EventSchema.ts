@@ -20,6 +20,7 @@ export const EventSchema = yup
         isInPerson: yup.boolean().required('The type of event is missing'),
         authorId: yup.string().required('The authorId is missing'),
         isPrivate: yup.boolean(),
+        selectedTags: yup.array(),
     })
     .required();
 

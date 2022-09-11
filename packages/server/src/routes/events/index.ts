@@ -31,7 +31,9 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     position,
                     isPrivate,
                     authorId,
+                    selectedTags,
                 } = request.body;
+                console.log(selectedTags);
 
                 const event = await fastify.prisma.event.create({
                     data: {
@@ -48,6 +50,9 @@ export default async function (fastify: FastifyInstance, opts: any) {
                         isInPerson,
                         isPrivate,
                         authorId,
+                        tags: {
+                            connect: selectedTags,
+                        },
                     },
                 });
 
@@ -68,6 +73,11 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     id: request.params.id,
                 },
                 include: {
+                    tags: {
+                        select: {
+                            tag: true,
+                        },
+                    },
                     attendees: {
                         select: {
                             user: true,
@@ -121,6 +131,18 @@ export default async function (fastify: FastifyInstance, opts: any) {
             return await fastify.prisma.event.findMany({
                 take,
                 skip,
+                include: {
+                    tags: {
+                        select: {
+                            tag: true,
+                        },
+                    },
+                    attendees: {
+                        select: {
+                            user: true,
+                        },
+                    },
+                },
                 where: {
                     isPrivate: false,
                     title: {
@@ -145,7 +167,19 @@ export default async function (fastify: FastifyInstance, opts: any) {
         },
         async (request: any, reply) => {
             try {
-                await fastify.prisma.event.update({
+                const event = await fastify.prisma.event.update({
+                    include: {
+                        tags: {
+                            select: {
+                                tag: true,
+                            },
+                        },
+                        attendees: {
+                            select: {
+                                user: true,
+                            },
+                        },
+                    },
                     where: {
                         id: request.params.id,
                     },
@@ -154,8 +188,9 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     },
                 });
 
-                reply.code(204).send();
+                reply.code(200).send(event);
             } catch (e: any) {
+                console.log(e);
                 if (e instanceof Prisma.PrismaClientKnownRequestError) {
                     if (e.code === 'P2025') {
                         reply.code(404).send({
@@ -207,6 +242,67 @@ export default async function (fastify: FastifyInstance, opts: any) {
             });
 
             reply.code(201).send(usersOnEvent);
+        } catch (e) {
+            console.log(e);
+            if (e instanceof Prisma.PrismaClientKnownRequestError) {
+                if (e.code === 'P2025') {
+                    reply.code(404).send({
+                        error: 'Ressource not found on the server',
+                        message: 'The event was not found',
+                    });
+                }
+            }
+            reply.code(500).send({
+                error: 'Internal server error',
+                message: 'Something went wrong.',
+            });
+        }
+    });
+
+    fastify.patch('/:id/tags', async (request: any, reply) => {
+        try {
+            const eventTags = await fastify.prisma.tag.findMany({
+                select: {
+                    id: true,
+                },
+                where: {
+                    events: {
+                        some: {
+                            id: request.params.id,
+                        },
+                    },
+                },
+            });
+
+            const { selectedTags } = request.body ?? [];
+            let disconnectedTags: any = eventTags;
+            if (selectedTags) {
+                disconnectedTags = eventTags.filter(
+                    ({ id: id1 }) =>
+                        !selectedTags.some(({ id: id2 }) => id1 === id2)
+                );
+            }
+
+            const event = await fastify.prisma.event.update({
+                include: {
+                    tags: {
+                        select: {
+                            tag: true,
+                        },
+                    },
+                },
+                where: {
+                    id: request.params.id,
+                },
+                data: {
+                    tags: {
+                        disconnect: disconnectedTags,
+                        connect: selectedTags,
+                    },
+                },
+            });
+
+            reply.code(200).send(event);
         } catch (e) {
             console.log(e);
             if (e instanceof Prisma.PrismaClientKnownRequestError) {

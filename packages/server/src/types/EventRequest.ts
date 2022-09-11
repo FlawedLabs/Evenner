@@ -15,6 +15,7 @@ export type EventRequest = FastifyRequest<{
         isInPerson: boolean;
         authorId: string;
         isPrivate?: boolean;
+        selectedTags?: Array<Object>;
     };
 
     Params: {

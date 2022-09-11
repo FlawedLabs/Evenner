@@ -121,10 +121,8 @@ export default async function (fastify: FastifyInstance, opts: any) {
                 if (e instanceof Prisma.PrismaClientKnownRequestError) {
                     if (e.code === 'P2025') {
                         reply.code(404).send({
-                            error: {
-                                error: 'Error Not Found',
-                                message: 'The tag was not found',
-                            },
+                            error: 'Ressource not found on the server',
+                            message: 'The tag was not found',
                         });
                     }
                 }
