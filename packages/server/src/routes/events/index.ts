@@ -33,7 +33,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     authorId,
                     selectedTags,
                 } = request.body;
-                console.log(selectedTags);
 
                 const event = await fastify.prisma.event.create({
                     data: {
@@ -190,7 +189,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
 
                 reply.code(200).send(event);
             } catch (e: any) {
-                console.log(e);
                 if (e instanceof Prisma.PrismaClientKnownRequestError) {
                     if (e.code === 'P2025') {
                         reply.code(404).send({
@@ -304,7 +302,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
 
             reply.code(200).send(event);
         } catch (e) {
-            console.log(e);
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
                 if (e.code === 'P2025') {
                     reply.code(404).send({
