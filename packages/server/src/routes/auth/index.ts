@@ -1,9 +1,11 @@
 import { FastifyInstance } from 'fastify';
 import { SigninRequest } from '../../types/AuthRequestsTypes';
 import { AuthSchema } from 'common/src/schemas/AuthSchema';
-import bcrypt from 'bcrypt';
+import { compare } from 'bcrypt';
+import { generateAccessToken, generateRefreshToken } from '../../util/jwtToken';
 
-export default async function (fastify: FastifyInstance, opts: any) {
+export default async function (fastify: FastifyInstance) {
+    // Signin route, generate two tokens, an access one and a refresh token and add the
     fastify.post(
         '/signin',
         {
@@ -14,6 +16,8 @@ export default async function (fastify: FastifyInstance, opts: any) {
 
         async (request: SigninRequest, reply) => {
             const { email, password } = request.body;
+
+            console.log(request.headers.authorization);
 
             try {
                 const user = await fastify.prisma.user.findUniqueOrThrow({
@@ -29,10 +33,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     },
                 });
 
-                const isPasswordValid = await bcrypt.compare(
-                    password,
-                    user.password
-                );
+                const isPasswordValid = await compare(password, user.password);
 
                 if (!isPasswordValid) {
                     reply.code(401).send({
@@ -41,19 +42,24 @@ export default async function (fastify: FastifyInstance, opts: any) {
                     });
                 }
 
-                const token = fastify.jwt.sign(
-                    {
-                        user: {
-                            id: user.id,
-                            email: user.email,
-                            name: user.name,
-                            role: user.role,
-                        },
-                    },
-                    { expiresIn: 1200, iss: 'Evenner' }
-                );
+                // Generate an access token and a refresh token and store it in a cookie
+                const accessToken = generateAccessToken(fastify, user);
+                const refreshToken = generateRefreshToken(fastify, user);
 
-                return { token };
+                /* @TODO Check security issues, rotating secret?
+                 * https://github.com/fastify/fastify-cookie#rotating-signing-secret
+                 * Update domain based on env
+                 */
+
+                reply.setCookie('jid_token', refreshToken, {
+                    httpOnly: true,
+                    domain: 'localhost',
+                    path: '/',
+                    sameSite: true,
+                    signed: true,
+                });
+
+                return { accessToken };
             } catch (e: any) {
                 reply.code(404).send({
                     error: 'Ressource not found on the server',
@@ -62,4 +68,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
             }
         }
     );
+
+    fastify.post('/logout', async (request, reply) => {});
 }

@@ -31,7 +31,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
     // FindMany, return 10 users
     fastify.get(
         '/',
-        { preHandler: fastify.auth([fastify.checkAdmin]) },
+        { preHandler: fastify.auth([fastify.verifyJwt, fastify.checkAdmin]) },
         async (request, reply) => {
             return await fastify.prisma.user.findMany({
                 take: 10,
