@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.8'
 
 services:
     db:
@@ -14,3 +14,15 @@ services:
         restart: always
         ports:
             - '8080:8080'
+
+    redis:
+        image: redis:7.0.4-alpine
+        restart: always
+        ports:
+        - '6379:6379'
+
+    mailhog:
+        image: mailhog/mailhog
+        ports:
+        - '1025:1025' # smtp
+        - '8025:8025' # web ui

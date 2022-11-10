@@ -2,6 +2,8 @@ import Fastify from 'fastify';
 import errorHandler from './util/errorHandler';
 import autoLoad from '@fastify/autoload';
 import yupValidatorCompiler from './util/yupValidatorCompiler';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 import path from 'path';
 
