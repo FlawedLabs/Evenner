@@ -21,6 +21,6 @@ export const generateRefreshToken = (fastify: FastifyInstance, user: any) => {
                 name: user.name,
             },
         },
-        { expiresIn: '1d', iss: 'Evenner', sub: user.id }
+        { expiresIn: '15s', iss: 'Evenner', sub: user.id }
     );
 };

@@ -21,6 +21,7 @@ export default fp<FastifyPluginAsync>(async (fastify: FastifyInstance) => {
 
     // Check if the user has an active JWT token
     // If not, check the refresh token, and create a new access token
+    // Maybe rework how the reply() and done() are sent
     fastify.decorate(
         'verifyJwt',
         (request: FastifyRequest, reply: FastifyReply, done: Function) => {
@@ -40,6 +41,10 @@ export default fp<FastifyPluginAsync>(async (fastify: FastifyInstance) => {
                 if (e.code === 'FAST_JWT_EXPIRED') {
                     if (request.cookies?.jid_token) {
                         try {
+                            request.log.info(
+                                'Trying to generate a new access token...'
+                            );
+
                             const refreshToken = request.cookies.jid_token;
                             const unsignedRefreshToken =
                                 request.unsignCookie(refreshToken);
@@ -62,21 +67,21 @@ export default fp<FastifyPluginAsync>(async (fastify: FastifyInstance) => {
                             return done();
                         } catch (e: any) {
                             // The refresh token expired, so redirect to login page
-                            reply.code(401).send({
+                            return reply.code(401).send({
                                 error: 'Unauthorized',
                                 message: 'Please log in again',
                             });
                         }
                     } else {
                         // No refresh token provided
-                        reply.code(401).send({
+                        return reply.code(401).send({
                             error: 'Unauthorized',
                             message: 'Please try to connect',
                         });
                     }
                 }
 
-                reply.code(500).send({
+                return reply.code(500).send({
                     error: 'Invalid Token',
                     message: 'Error while verifying the token',
                 });
