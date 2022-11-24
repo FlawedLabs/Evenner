@@ -1,0 +1,15 @@
+.leaflet-touch .leaflet-bar {
+    @apply drop-shadow-md rounded-full border-0;
+
+    a {
+        @apply w-9 h-9 leading-9 border-0;
+    }
+
+    a:first-child {
+        @apply rounded-t-lg;
+    }
+
+    a:last-child {
+        @apply rounded-b-lg;
+    }
+}
