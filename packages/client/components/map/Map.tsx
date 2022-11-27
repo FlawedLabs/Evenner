@@ -13,6 +13,8 @@ import {
     Dispatch,
     SetStateAction,
 } from 'react';
+import useModal from '../../hooks/useModal';
+import Modal from '../modal/Modal';
 
 type MapProps = {
     fullscreen: boolean;
@@ -29,52 +31,82 @@ export default function Map({ fullscreen = true, locate = true }: MapProps) {
     const [position, setPosition] = useState<LatLngExpression>([51.505, -0.09]);
 
     return (
-        <div className="p-4 h-full w-full bg-white rounded-lg transition-all ease-in-out duration-150 drop-shadow-md hover:drop-shadow-xl">
-            <MapContainer
-                className="h-full w-full rounded-lg"
-                center={position}
-                zoom={13}
-                scrollWheelZoom={true}
-            >
-                <TileLayer
-                    attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
-                    url={getMapThemeUrl('a')}
-                />
-                <div className="leaflet-top leaflet-right">
-                    {fullscreen && <FullscreenButton />}
+        <MapContainer
+            className="h-full rounded-lg"
+            center={position}
+            zoom={13}
+            scrollWheelZoom={true}
+        >
+            <TileLayer
+                attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
+                url={getMapThemeUrl('a')}
+            />
+            <div className="leaflet-top leaflet-right">
+                {fullscreen && <FullscreenButton />}
 
-                    {locate && (
-                        <MapContext.Provider value={setPosition}>
-                            <LocateMe />
-                        </MapContext.Provider>
-                    )}
-                </div>
-                <Marker position={position}>
-                    <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
-                    </Popup>
-                </Marker>
-            </MapContainer>
-        </div>
+                {locate && (
+                    <MapContext.Provider value={setPosition}>
+                        <LocateMe />
+                    </MapContext.Provider>
+                )}
+            </div>
+            <Marker position={position}>
+                <Popup>
+                    A pretty CSS3 popup. <br /> Easily customizable.
+                </Popup>
+            </Marker>
+        </MapContainer>
     );
 }
 
 function FullscreenButton() {
+    const { isOpen, toggle } = useModal();
+
     return (
-        <div className="leaflet-control leaflet-bar">
-            <a
-                className="bg-white p-2 outline-none focus:outline-none"
-                href="#"
-                title="Display the map in fullscreen"
-                role="button"
-                aria-label="Display the map in fullscreen"
-                aria-disabled="false"
+        <>
+            <div className="leaflet-control leaflet-bar" onClick={toggle}>
+                <a
+                    className="bg-white p-2 outline-none focus:outline-none"
+                    href="#"
+                    title="Display the map in fullscreen"
+                    role="button"
+                    aria-label="Display the map in fullscreen"
+                    aria-disabled="false"
+                >
+                    <span aria-hidden="true">
+                        <ArrowsPointingOutIcon />
+                    </span>
+                </a>
+            </div>
+
+            <Modal
+                title={`Display map in fullscreen`}
+                size="lg"
+                hide={toggle}
+                isShowing={isOpen}
             >
-                <span aria-hidden="true">
-                    <ArrowsPointingOutIcon />
-                </span>
-            </a>
-        </div>
+                <>
+                    <div className="h-96">
+                        <Map fullscreen={false} locate />
+                    </div>
+
+                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <button
+                            type="button"
+                            className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+                        >
+                            Deactivate
+                        </button>
+                        <button
+                            type="button"
+                            className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </>
+            </Modal>
+        </>
     );
 }
 
