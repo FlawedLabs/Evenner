@@ -34,12 +34,12 @@ export default function Map({ fullscreen = true, locate = true }: MapProps) {
         <MapContainer
             className="h-full rounded-lg"
             center={position}
-            zoom={13}
+            zoom={6}
             scrollWheelZoom={true}
         >
             <TileLayer
                 attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
-                url={getMapThemeUrl('a')}
+                url={getMapThemeUrl('light')}
             />
             <div className="leaflet-top leaflet-right">
                 {fullscreen && <FullscreenButton />}
