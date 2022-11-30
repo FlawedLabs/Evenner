@@ -47,7 +47,9 @@ export default function BasicLayout({ children }: BasicMenuProps) {
                                     />
                                 )}
                             </button>
-                            <BasicButton>Sign up</BasicButton>
+                            <Link href="/register">
+                                <BasicButton type="button">Sign up</BasicButton>
+                            </Link>
                             {/* <button
                                 type="button"
                                 className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"

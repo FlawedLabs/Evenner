@@ -51,7 +51,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
             },
         },
         async (request: createUserRequest, reply) => {
-            const { name, email, password, role } = request.body;
+            const { name, email, password } = request.body;
 
             const encryptedPassword = await bcrypt.hash(password, BCRYPT_SALT);
 
@@ -61,7 +61,7 @@ export default async function (fastify: FastifyInstance, opts: any) {
                         name,
                         email,
                         password: encryptedPassword,
-                        role,
+                        role: 'USER',
                     },
                 });
 
