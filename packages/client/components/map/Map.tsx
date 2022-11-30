@@ -12,9 +12,12 @@ import {
     createContext,
     Dispatch,
     SetStateAction,
+    useEffect,
+    useRef,
 } from 'react';
 import useModal from '../../hooks/useModal';
 import Modal from '../modal/Modal';
+import ThemeContext from '../../context/ThemeContext';
 
 type MapProps = {
     fullscreen: boolean;
@@ -29,6 +32,14 @@ const MapContext = createContext<Dispatch<SetStateAction<LatLngExpression>>>(
 // Map component, height and width are 100% by default
 export default function Map({ fullscreen = true, locate = true }: MapProps) {
     const [position, setPosition] = useState<LatLngExpression>([51.505, -0.09]);
+    const { theme } = useContext(ThemeContext);
+    const ref = useRef(null);
+
+    useEffect(() => {
+        if (ref.current) {
+            ref.current.setUrl(getMapThemeUrl(theme));
+        }
+    }, [theme]);
 
     return (
         <MapContainer
@@ -37,9 +48,11 @@ export default function Map({ fullscreen = true, locate = true }: MapProps) {
             zoom={6}
             scrollWheelZoom={true}
         >
+            {/* Might just use a filter on the map instead of reloading the TileLayer, less call on the Mapbox API is win win */}
             <TileLayer
                 attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
                 url={getMapThemeUrl('light')}
+                ref={ref}
             />
             <div className="leaflet-top leaflet-right">
                 {fullscreen && <FullscreenButton />}

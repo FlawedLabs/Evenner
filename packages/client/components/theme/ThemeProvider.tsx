@@ -1,18 +1,28 @@
-import { createContext, useState } from 'react';
 import BasicLayout from '../../layout/BasicLayout';
-import { getThemeFromLocalStorage } from '../../lib/ThemeUtils';
 import ThemeContext from '../../context/ThemeContext';
+import { useState } from 'react';
 
 interface ThemeProviderProps {
     children: React.ReactNode;
 }
 
 export default function ThemeProvider({ children }: ThemeProviderProps) {
-    // Read theme from local storage
-    const [theme, setTheme] = useState(getThemeFromLocalStorage);
+    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+    const toggleTheme = () => {
+        if (theme === 'light') {
+            window.localStorage.setItem('evenner_theme', 'dark');
+            window.document.documentElement.classList.add('dark');
+            setTheme('dark');
+        } else {
+            window.localStorage.setItem('evenner_theme', 'light');
+            window.document.documentElement.classList.remove('dark');
+            setTheme('light');
+        }
+    };
 
     return (
-        <ThemeContext.Provider value={{ theme, setTheme }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
             <BasicLayout>{children}</BasicLayout>
         </ThemeContext.Provider>
     );

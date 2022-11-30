@@ -14,8 +14,10 @@ const Home: NextPage = () => {
     return (
         <>
             <div className="h-screen flex flex-col justify-center items-center">
-                <h1 className="text-5xl font-bold pb-3">Evenner</h1>
-                <div className="p-4 h-4/6 md:max-w-6xl w-full mb-6 bg-white rounded-lg transition-all ease-in-out duration-150 drop-shadow-md hover:drop-shadow-xl">
+                <h1 className="text-5xl font-bold pb-3 dark:text-white">
+                    Evenner
+                </h1>
+                <div className="p-4 h-4/6 md:max-w-6xl w-full mb-6 bg-white dark:bg-[#242c37] rounded-lg transition-all ease-in-out duration-150 drop-shadow-md hover:drop-shadow-xl">
                     <Map fullscreen locate />
                 </div>
             </div>

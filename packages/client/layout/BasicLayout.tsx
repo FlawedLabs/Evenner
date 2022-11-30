@@ -1,18 +1,15 @@
 import Link from 'next/link';
+import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { useContext } from 'react';
 import ThemeContext from '../context/ThemeContext';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
+import BasicButton from '../components/buttons/BasicButton';
 
 interface BasicMenuProps {
     children: React.ReactNode;
 }
 
 export default function BasicLayout({ children }: BasicMenuProps) {
-    const { theme, setTheme } = useContext(ThemeContext);
-
-    console.log(theme === 'dark');
-
-    console.log(theme);
+    const { theme, toggleTheme } = useContext(ThemeContext);
 
     return (
         <>
@@ -32,25 +29,26 @@ export default function BasicLayout({ children }: BasicMenuProps) {
                         <div className="flex items-center md:order-2">
                             <button
                                 type="button"
-                                className="flex mr-3 text-sm rounded-full md:mr-0 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-600"
+                                className="flex mr-3 text-sm rounded-full focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-600"
                                 id="user-menu-button"
                                 aria-expanded="false"
                                 data-dropdown-toggle="user-dropdown"
                                 data-dropdown-placement="bottom"
                             >
-                                {theme === 'dark' ? (
+                                {theme === 'light' ? (
                                     <MoonIcon
-                                        onClick={() => setTheme('light')}
-                                        className="w-6 h-6 text-white"
+                                        onClick={() => toggleTheme()}
+                                        className="w-6 h-6 text-gray-800"
                                     />
                                 ) : (
                                     <SunIcon
-                                        onClick={() => setTheme('dark')}
-                                        className="w-6 h-6 text-gray-800"
+                                        onClick={() => toggleTheme()}
+                                        className="w-6 h-6 text-white"
                                     />
                                 )}
                             </button>
-                            <button
+                            <BasicButton>Sign up</BasicButton>
+                            {/* <button
                                 type="button"
                                 className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                                 id="user-menu-button"
@@ -74,7 +72,7 @@ export default function BasicLayout({ children }: BasicMenuProps) {
                                         Bonnie Green
                                     </span>
                                     <span className="block text-sm font-medium text-gray-500 truncate dark:text-gray-400">
-                                        name@flowbite.com
+                                        name@evenner.com
                                     </span>
                                 </div>
                                 <ul
@@ -114,7 +112,7 @@ export default function BasicLayout({ children }: BasicMenuProps) {
                                         </a>
                                     </li>
                                 </ul>
-                            </div>
+                            </div> */}
                             <button
                                 data-collapse-toggle="mobile-menu-2"
                                 type="button"
