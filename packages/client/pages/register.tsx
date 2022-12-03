@@ -1,15 +1,23 @@
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { UserSchemaPost } from 'common/src/schemas/UserSchema';
-import BasicButton from '../components/buttons/BasicButton';
+import { BasicButton } from '../components/buttons/BasicButton';
+import { toast } from 'react-toastify';
 import { API_URL } from '../lib/const';
+import { useContext } from 'react';
+import ThemeContext from '../context/ThemeContext';
 
 export default function Register() {
-    const sendRegister = async (values: {
-        name: string;
-        email: string;
-        password: string;
-    }) => {
-        const result = await fetch(`${API_URL}/users`, {
+    const { theme } = useContext(ThemeContext);
+
+    const sendRegister = async (
+        values: {
+            name: string;
+            email: string;
+            password: string;
+        },
+        setSubmitting: any
+    ) => {
+        fetch(`${API_URL}/users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -17,22 +25,36 @@ export default function Register() {
             body: JSON.stringify({
                 ...values,
             }),
-        });
+        })
+            .then((res) => {
+                res.json().then((formattedData) => {
+                    if (res.status === 201) {
+                        toast.success('User created!', { theme });
+                    } else {
+                        toast.error(formattedData.error, { theme });
+                    }
+                });
+            })
+            .catch((err) => {
+                console.log(err);
 
-        console.log('API result', result);
+                toast.error(err.message, {
+                    theme,
+                });
+            })
+            .finally(() => {
+                setSubmitting(false);
+            });
     };
 
     return (
-        <div>
-            <h1>Any place in your app!</h1>
+        <div className="container max-w-2xl mx-auto flex flex-col">
+            <h1 className="text-center font-bold text-4xl">Register</h1>
             <Formik
                 initialValues={{ name: '', email: '', password: '' }}
                 validationSchema={UserSchemaPost}
                 onSubmit={(values, { setSubmitting }) => {
-                    sendRegister(values);
-                    setTimeout(() => {
-                        setSubmitting(false);
-                    }, 400);
+                    sendRegister(values, setSubmitting);
                 }}
             >
                 {({ isSubmitting }) => (

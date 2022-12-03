@@ -208,7 +208,6 @@ export default async function (fastify: FastifyInstance, opts: any) {
 
             reply.code(201).send(usersOnEvent);
         } catch (e) {
-            console.log(e);
             if (e instanceof Prisma.PrismaClientKnownRequestError) {
                 if (e.code === 'P2025') {
                     reply.code(404).send({

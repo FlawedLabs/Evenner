@@ -17,8 +17,6 @@ export default async function (fastify: FastifyInstance) {
         async (request: SigninRequest, reply) => {
             const { email, password } = request.body;
 
-            console.log(request.headers.authorization);
-
             try {
                 const user = await fastify.prisma.user.findUniqueOrThrow({
                     where: {
@@ -51,6 +49,7 @@ export default async function (fastify: FastifyInstance) {
                  * Update domain based on env
                  */
 
+                // Might trigger the wrong error if the cookie env is not set LMAO!
                 reply.setCookie('jid_token', refreshToken, {
                     httpOnly: true,
                     domain: 'localhost',
@@ -59,7 +58,7 @@ export default async function (fastify: FastifyInstance) {
                     signed: true,
                 });
 
-                return { accessToken };
+                return { accessToken, id: user.id };
             } catch (e: any) {
                 reply.code(404).send({
                     error: 'Ressource not found on the server',

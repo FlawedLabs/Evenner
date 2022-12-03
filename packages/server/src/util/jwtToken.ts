@@ -6,10 +6,11 @@ export const generateAccessToken = (fastify: FastifyInstance, user: any) => {
         {
             user: {
                 name: user.name,
+                email: user.email,
                 role: user.role,
             },
         },
-        { expiresIn: '10s', iss: 'Evenner', sub: user.id }
+        { expiresIn: '1d', iss: 'Evenner', sub: user.id }
     );
 };
 
@@ -21,6 +22,6 @@ export const generateRefreshToken = (fastify: FastifyInstance, user: any) => {
                 name: user.name,
             },
         },
-        { expiresIn: '15s', iss: 'Evenner', sub: user.id }
+        { expiresIn: '1w', iss: 'Evenner', sub: user.id }
     );
 };
