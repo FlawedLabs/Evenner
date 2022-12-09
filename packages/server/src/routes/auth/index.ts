@@ -58,7 +58,7 @@ export default async function (fastify: FastifyInstance) {
                     signed: true,
                 });
 
-                return { accessToken, id: user.id };
+                return user;
             } catch (e: any) {
                 reply.code(404).send({
                     error: 'Ressource not found on the server',

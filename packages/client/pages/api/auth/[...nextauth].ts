@@ -1,10 +1,14 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import DiscordProvider from "next-auth/providers/discord";
 import { API_URL } from '../../../lib/const';
-import { decode } from 'jsonwebtoken';
 
 export const authOptions = {
     providers: [
+        DiscordProvider({
+            clientId: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID as string,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+        }),
         CredentialsProvider({
             name: 'Credentials',
             credentials: {
@@ -38,26 +42,11 @@ export const authOptions = {
         signIn: '/signin',
     },
     session: {
-        jwt: true,
+        strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60
     },
-    callbacks: {
-        async jwt({ token, user }: any) {
-            if (user) {
-                token.accessToken = user.accessToken;
-                token.id = user.id;
-            }
-
-            return token;
-        },
-        async session({ session, token, user }: any) {
-            // Really not happy with this, but it works for now, don't even know if it's correct
-            const decodedToken = decode(token.accessToken);
-            session.accessToken = token.accessToken;
-            session.id = token.id;
-            session.user = { ...decodedToken.user };
-
-            return session;
-        },
+    jwt: {
+        maxAge: 60 * 60 * 24 * 30,
     },
 
     secret: process.env.NEXT_PUBLIC_AUTH_SECRET,

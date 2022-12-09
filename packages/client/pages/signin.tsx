@@ -81,6 +81,8 @@ export default function Signin({ csrfToken }: { csrfToken: string }) {
                     </Form>
                 )}
             </Formik>
+
+            <button onClick={() => signIn('discord', { callbackUrl : "http://localhost:3000" })}>discord</button>
         </div>
     );
 }
