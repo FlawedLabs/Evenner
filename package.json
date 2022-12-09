@@ -8,13 +8,15 @@
     "dev:client": "cd ./packages/client && npm run dev",
     "dev:server": "cd ./packages/server && npm run dev",
     "db:push": "cd ./packages/server && npx prisma db push",
-    "lint": "npx prettier --write ."
+    "lint": "npx prettier --write .",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.5.0",
-    "husky": "^8.0.1",
+    "husky": "^8.0.2",
     "lerna": "^5.4.3",
-    "lint-staged": "^13.0.3"
+    "lint-staged": "^13.1.0",
+    "prettier": "^2.8.1"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css,md}": "prettier --write"

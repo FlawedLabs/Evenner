@@ -20,7 +20,7 @@ export default function BasicLayout({ children }: BasicMenuProps) {
     return (
         <>
             <header>
-                <nav className="bg-white border-gray-200 px-3 sm:px-4 py-3 rounded dark:bg-gray-900">
+                <nav className="border-gray-200 px-3 sm:px-4 py-3 rounded dark:bg-gray-900">
                     <div className="container flex flex-wrap items-center justify-between mx-auto">
                         <Link href="/" className="flex items-center">
                             <img
@@ -37,7 +37,7 @@ export default function BasicLayout({ children }: BasicMenuProps) {
                             className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
                             id="mobile-menu-2"
                         >
-                            <ul className="flex flex-col p-4 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                            <ul className="flex flex-col p-4 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                                 <li>
                                     <a
                                         href="#"
@@ -111,7 +111,10 @@ export default function BasicLayout({ children }: BasicMenuProps) {
                                         data-dropdown-toggle="userDropdown"
                                         data-dropdown-placement="bottom-start"
                                         className="w-10 h-10 rounded-full cursor-pointer"
-                                        src={session?.user?.image || "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1160&q=80"}
+                                        src={
+                                            session?.user?.image ||
+                                            'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1160&q=80'
+                                        }
                                         alt="User dropdown"
                                         onClick={() =>
                                             toggleDropdown(!isDropdownOpen)
@@ -129,7 +132,7 @@ export default function BasicLayout({ children }: BasicMenuProps) {
                                         }}
                                         className={`${
                                             isDropdownOpen ? 'block' : 'hidden'
-                                        } z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600`}
+                                        } w-auto min-w-[11rem] z-10 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600`}
                                     >
                                         <div className="py-3 px-4 text-sm text-gray-900 dark:text-white">
                                             <div>{session?.user?.name}</div>

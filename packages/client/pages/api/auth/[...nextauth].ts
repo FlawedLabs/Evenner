@@ -1,6 +1,8 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import DiscordProvider from "next-auth/providers/discord";
+import DiscordProvider from 'next-auth/providers/discord';
+import GoogleProvider from 'next-auth/providers/google';
+import FacebookProvider from 'next-auth/providers/facebook';
 import { API_URL } from '../../../lib/const';
 
 export const authOptions = {
@@ -8,6 +10,14 @@ export const authOptions = {
         DiscordProvider({
             clientId: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID as string,
             clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+        }),
+        FacebookProvider({
+            clientId: process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID as string,
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+        }),
+        GoogleProvider({
+            clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         }),
         CredentialsProvider({
             name: 'Credentials',
@@ -42,8 +52,8 @@ export const authOptions = {
         signIn: '/signin',
     },
     session: {
-        strategy: "jwt",
-        maxAge: 30 * 24 * 60 * 60
+        jwt: true,
+        maxAge: 30 * 24 * 60 * 60,
     },
     jwt: {
         maxAge: 60 * 60 * 24 * 30,
